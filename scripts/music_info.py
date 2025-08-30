@@ -2,11 +2,50 @@ import os
 from dotenv import load_dotenv
 import requests
 from collections import Counter
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
 
 load_dotenv()
 
 API_KEY = os.getenv("LASTFM_API_KEY")
 BASE_URL = os.getenv("LASTFM_BASE_URL")
+
+CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
+CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
+
+auth_manager = SpotifyClientCredentials(client_id=CLIENT_ID, client_secret=CLIENT_SECRET)
+sp = spotipy.Spotify(auth_manager=auth_manager)
+
+def get_album_info(track_id: str):
+    """
+    Fetch album information for a track from the Spotify API.
+    
+    Args:
+        track_id (str): The Spotify track ID.
+        
+    Returns:
+        dict: Track info with a list of genres/tags.
+        'track_name': track['name'],
+        'album_type': album_type,
+        'album_name': album_name,
+        'release_date': release_date
+    """
+    if not track_id:
+        raise ValueError("A valid Spotify track ID must be provided.")
+
+    track = sp.track(track_id) 
+    
+    album = track['album']
+    album_type = album['album_type'] 
+    album_name = album['name']
+    release_date = album['release_date']
+    
+    return {
+        'track_name': track['name'],
+        'album_type': album_type,
+        'album_name': album_name,
+        'release_date': release_date
+    }
 
 def get_track_genres(track_name: str, *artists: str, limit: int = 5):
     """
@@ -19,6 +58,9 @@ def get_track_genres(track_name: str, *artists: str, limit: int = 5):
         
     Returns:
         dict: Track info with a list of genres/tags.
+        "track": data["track"]["name"],
+        "artist": artist_name,
+        "genres": genres        
     """
     if not artists:
         raise ValueError("At least one artist name must be provided.")
@@ -58,10 +100,9 @@ def get_artist_genres(*artist_names: str, limit: int = 5):
         top_n (int): Number of top genres to return overall.
         
     Returns:
-        dict: {
-            "artists": tuple of artist names,
-            "genres": list of top N genres overall
-        }
+        dict: Merged artist info with a list of top genres/tags.
+        "artists": artist_names,
+        "genres": top_genres
     """
     if not artist_names:
         raise ValueError("At least one artist name must be provided.")
