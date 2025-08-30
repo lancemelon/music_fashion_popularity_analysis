@@ -1,1 +1,15 @@
+# Datasets
 datasets/
+
+# Environment
+.env*
+
+# Python
+__pycache__/
+test_*.py
+
+# Cache
+scripts/.cache
+
+# Libraries
+*.egg-info
