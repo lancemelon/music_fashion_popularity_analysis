@@ -9,7 +9,7 @@ __pycache__/
 test_*.py
 
 # Cache
-scripts/.cache
+*/.cache
 
 # Libraries
 *.egg-info
