@@ -47,13 +47,13 @@ def get_album_info(track_id: str):
         'release_date': release_date
     }
 
-def get_track_genres(track_name: str, *artists: str, limit: int = 5):
+def get_track_genres(track_name: str, artists, limit: int = 5):
     """
     Fetch genres (tags) for a track from the Last.fm API.
     
     Args:
         track_name (str): The name of the track.
-        *artists (str): One or more artist names.
+        artists (str): One or more artist names.
         limit (int): How many genre tags to return (default = 5).
         
     Returns:
@@ -64,6 +64,11 @@ def get_track_genres(track_name: str, *artists: str, limit: int = 5):
     """
     if not artists:
         raise ValueError("At least one artist name must be provided.")
+    
+    if isinstance(artists, str):
+        artists = [artists]
+    elif not isinstance(artists, (list, tuple)):
+        raise TypeError("artists must be a string or list/tuple of strings")
     
     artist_name = artists[0]  
     
